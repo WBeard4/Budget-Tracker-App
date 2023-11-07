@@ -56,6 +56,7 @@ def add_expense():
                    VALUES(?, ?, ?, ?, ?, ?)''', (id, item, expense, cost, category, total_money))
     db.commit()
     print(f"{item} has been added to budget planner")
+    print()
 
 
 # Going to be amending the total a lot, so creating a function to pull it
