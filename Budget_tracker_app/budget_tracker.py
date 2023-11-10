@@ -80,8 +80,14 @@ def next_id():
         return(1)
 
 # def view_expenses
-#def view_expenses():
-
+def view_expenses():
+    cursor.execute("SELECT * FROM Budget WHERE Expense = 1")
+    expenses = cursor.fetchall()
+    if expenses:
+        for item in expenses:
+            print(f"Item {item[0]}: {item[1]} Cost: £{item[3]}")
+    else:
+        print("No expenses found")
     
 # Connect / create the SQLite database
 try:
@@ -130,8 +136,8 @@ try:
             if user_choice == 1:
                 add_expense()
         # def view_expenses
-            #elif user_choice == 2:
-               # view_expenses()
+            elif user_choice == 2:
+                view_expenses()
         # def view_expense_by_cat
         # def add_income
         # def view_income
@@ -143,7 +149,6 @@ try:
             elif user_choice == 11:
                 db.close()
                 sys.exit("Exiting program")
-            db.close()
         except sqlite3.Error as e:
             print(f"Error: {e}")
 except sqlite3.Error as e:
