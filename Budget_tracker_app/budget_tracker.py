@@ -1,43 +1,3 @@
-'''Compulsory Task (Option 1)
-Follow these steps to build the expense and budget tracker app:
-● Create a program that allows the user to:
-○ add new expense categories to the database
-○ update an expense amount
-○ delete an expense category from the database
-○ track their spending
-○ add income
-○ add income categories
-○ delete an income category from the database
-○ track their income
-○ View expense or income categories
-○ The program should be able to calculate the user’s budget based on
-the income and expenses that they have provided
-● Install the SQLite library. This will allow your app to communicate with the
-SQLite database.
-● Connect to the SQLite database. You can do this by using the "connect"
-function from the sqlite3 library.
-● Next, you will need to create your database tables to store your data. You
-can use the "execute" function to execute SQL commands to create tables.
-● Insert data: After creating tables, ensure that users are able to insert data
-into them. You can use the "execute" function to execute SQL commands to
-insert data.
-● Ensure that users can retrieve data from the database using SQL queries.
-● Close the connection to the database using the "close" function.
-● The program should present the user with the following menu:
-1. Add expense
-2. View expenses
-3. View expenses by category
-4. Add income
-5. View income
-6. View income by category
-7. Set budget for a category
-8. View budget for a category
-9. Set financial goals
-10. View progress towards financial goals
-11. Quit
-The program should perform the function that the user selects. The
-implementation of these functions is left up to you.'''
-
 # Import any libraries needed
 import sqlite3
 import sys
@@ -46,24 +6,23 @@ import sys
 # def add_expense
 def add_expense():
     item = input("Name of item: ")
-    cost = int(input("How much did this cost?: £"))
-    category = input("Which category does this fall under?: ").lower().strip()
+    cost = float(input("How much did this cost?: £"))
+    category = input("Which category does this fall under?: ").title().strip()
     expense = 1
     id = next_id()
     total = check_total()
     total_money = total- cost
-    cursor.execute('''INSERT INTO Budget(id, Item, Expense, Cost, Category, Total) 
+    cursor_tracker.execute('''INSERT INTO Budget(id, Item, Expense, Cost, Category, Total) 
                    VALUES(?, ?, ?, ?, ?, ?)''', (id, item, expense, cost, category, total_money))
-    db.commit()
+    db_tracker.commit()
     print(f"{item} has been added to budget planner")
     print()
 
-
 # Going to be amending the total a lot, so creating a function to pull it
 def check_total():
-    cursor.execute("SELECT Total FROM Budget ORDER BY id DESC LIMIT 1")
+    cursor_tracker.execute("SELECT Total FROM Budget ORDER BY id DESC LIMIT 1")
 
-    latest_total = cursor.fetchone()
+    latest_total = cursor_tracker.fetchone()
     if latest_total:
         return(latest_total[0])
     else:
@@ -71,8 +30,8 @@ def check_total():
 
 # Function to get the next id
 def next_id():
-    cursor.execute("SELECT MAX(id) FROM Budget")
-    latest_id = cursor.fetchone()
+    cursor_tracker.execute("SELECT MAX(id) FROM Budget")
+    latest_id = cursor_tracker.fetchone()
 
     if latest_id[0] is not None:
         return(latest_id[0] + 1)
@@ -85,8 +44,8 @@ def current_balance():
 
 # def view_expenses
 def view_expenses():
-    cursor.execute("SELECT * FROM Budget WHERE Expense = 1")
-    expenses = cursor.fetchall()
+    cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 1")
+    expenses = cursor_tracker.fetchall()
     if expenses:
         for item in expenses:
             print(f"Item {item[0]}: {item[1]} Cost: £{item[3]}")
@@ -95,8 +54,8 @@ def view_expenses():
     
 # def view_expense_by_cat
 def view_expense_by_cat():
-    cursor.execute("SELECT * FROM Budget WHERE Expense = 1 ORDER BY Category")
-    expenses = cursor.fetchall()
+    cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 1 ORDER BY Category")
+    expenses = cursor_tracker.fetchall()
     if expenses:
         for item in expenses:
             print(f"Category: {item[4].title()} - {item[1]} Cost: £{item[3]}")
@@ -104,22 +63,22 @@ def view_expense_by_cat():
 # def add_income
 def add_income():
     item = input("Please input income source: ")
-    cost = int(input("How much is this income?: £"))
-    category = input("What category does this fall under?: ")
+    cost = float(input("How much is this income?: £"))
+    category = input("What category does this fall under?: ").title().strip()
     expense = 0
     id = next_id()
     total = check_total()
     total_money = total + cost
-    cursor.execute('''INSERT INTO Budget(id, Item, Expense, Cost, Category, Total) 
+    cursor_tracker.execute('''INSERT INTO Budget(id, Item, Expense, Cost, Category, Total) 
                     VALUES(?, ?, ?, ?, ?, ?)''', (id, item, expense, cost, category, total_money))
-    db.commit()
+    db_tracker.commit()
     print(f"{item} has been added to budget planner")
     print()
 
 # def view_income
 def view_income():
-    cursor.execute("SELECT * FROM Budget WHERE Expense = 0")
-    income = cursor.fetchall()
+    cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 0")
+    income = cursor_tracker.fetchall()
     if income:
         for item in income:
             print(f"Item {item[0]}: {item[1]} Amount: £{item[3]}")
@@ -128,26 +87,50 @@ def view_income():
 
 # def view_income_by_cat
 def view_income_by_cat():
-    cursor.execute("SELECT * FROM Budget WHERE Expense = 0 ORDER BY Category")
-    incomes = cursor.fetchall()
+    cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 0 ORDER BY Category")
+    incomes = cursor_tracker.fetchall()
     if incomes:
         for item in incomes:
             print(f"Category: {item[4].title()} - {item[1]} Cost: £{item[3]}")
 
+# def cat_budget
+def cat_budget():
+    cursor_tracker.execute("SELECT * FROM Budget")
+    categories = cursor_tracker.fetchall()
+    print("Please choose from the below categories")
+    category_list = []
+    for category in categories:
+        category_name = category[4]
+        if category_name not in category_list:
+            category_list.append(category_name)
+        else:
+            continue
+    category_list = sorted(category_list)
+    print(category_list)
+    for i in category_list:
+        print(i)
+    budget_category = input(": ")
+    budget_amount = input("How much is the budget?: £")
+    cursor_tracker.execute("SELECT MAX(id) FROM Set_budget")
+    latest_id = cursor_tracker.fetchone()
+
+    cursor_budget.execute('''INSERT INTO Set_budget(id, Category, Amount) 
+                          VALUES (?, ?, ?)''', (latest_id, budget_category, budget_amount))
+
 # Connect / create the SQLite database
 try:
-    db = sqlite3.connect("tracker.db")
-    cursor = db.cursor()
+    db_tracker = sqlite3.connect("tracker.db")
+    cursor_tracker = db_tracker.cursor()
 
     # Check if the table exists, skip creation if it does
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Budget'")
-    table_exists = cursor.fetchone()
+    cursor_tracker.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Budget'")
+    table_exists = cursor_tracker.fetchone()
 
     if table_exists:
         print("Opening budget planner")
     # Create the table
     else:
-        cursor.execute('''CREATE TABLE Budget
+        cursor_tracker.execute('''CREATE TABLE Budget
                     (id INTEGER PRIMARY KEY,
                     Item TEXT,
                     Expense BOOLEAN,
@@ -155,9 +138,24 @@ try:
                     Category TEXT,
                     Total INTEGER)''')
         
-        db.commit()
+        db_tracker.commit()
         print("Budget planner created")
 
+    # Opening a second db to store budgets
+    db_budget = sqlite3.connect("Set_budget.db")
+    cursor_budget = db_budget.cursor()
+
+    # Check if the table exists, skip creation if it does
+    cursor_budget.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Set_budget'")
+    table_exists = cursor_budget.fetchone()
+    if table_exists:
+        print("Opening Budgets")
+    else:
+        cursor_budget.execute('''CREATE TABLE Set_budget
+                              (id INTEGET PRIMARY KEY,
+                              Category TEXT,
+                              Amount INTEGER)''')
+        db_budget.commit()
 
 # Get input from list of options
     while True:
@@ -200,11 +198,13 @@ try:
                 view_income_by_cat()
                 current_balance()
         # def cat_budget
+            elif user_choice == 7:
+                cat_budget()
         # def view_cat_budget
         # def set_goals
         # def view_goals
             elif user_choice == 11:
-                db.close()
+                db_tracker.close()
                 sys.exit("Exiting program")
         except sqlite3.Error as e:
             print(f"Error: {e}")
