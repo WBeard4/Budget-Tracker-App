@@ -46,8 +46,8 @@ import sys
 # def add_expense
 def add_expense():
     item = input("Name of item: ")
-    cost = int(input("How much did this cost?: "))
-    category = input("Which category does this fall under?: ").lower()
+    cost = int(input("How much did this cost?: £"))
+    category = input("Which category does this fall under?: ").lower().strip()
     expense = 1
     id = next_id()
     total = check_total()
@@ -89,6 +89,39 @@ def view_expenses():
     else:
         print("No expenses found")
     
+# def view_expense_by_cat
+def view_expense_by_cat():
+    cursor.execute("SELECT * FROM Budget WHERE Expense = 1 ORDER BY Category")
+    expenses = cursor.fetchall()
+    if expenses:
+        for item in expenses:
+            print(f"Category: {item[4].title()} - {item[1]} Cost: £{item[3]}")
+
+# def add_income
+def add_income():
+    item = input("Please input income source: ")
+    cost = int(input("How much is this income?: £"))
+    category = input("What category does this fall under?: ")
+    expense = 0
+    id = next_id()
+    total = check_total()
+    total_money = total + cost
+    cursor.execute('''INSERT INTO Budget(id, Item, Expense, Cost, Category, Total) 
+                    VALUES(?, ?, ?, ?, ?, ?)''', (id, item, expense, cost, category, total_money))
+    db.commit()
+    print(f"{item} has been added to budget planner")
+    print()
+
+# def view_income
+def view_income():
+    cursor.execute("SELECT * FROM Budget WHERE Expense = 0")
+    income = cursor.fetchall()
+    if income:
+        for item in income:
+            print(f"Item {item[0]}: {item[1]} Amount: £{item[3]}")
+    else:
+        print("No income found")
+
 # Connect / create the SQLite database
 try:
     db = sqlite3.connect("tracker.db")
@@ -139,8 +172,14 @@ try:
             elif user_choice == 2:
                 view_expenses()
         # def view_expense_by_cat
+            elif user_choice == 3:
+                view_expense_by_cat()
         # def add_income
+            elif user_choice == 4:
+                add_income()
         # def view_income
+            elif user_choice == 5:
+                view_income()
         # def view_income_by_cat
         # def cat_budget
         # def view_cat_budget
