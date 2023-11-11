@@ -79,6 +79,10 @@ def next_id():
     else:
         return(1)
 
+# Function to print the total current balance
+def current_balance():
+    print(f"Current balance: £{check_total()}")
+
 # def view_expenses
 def view_expenses():
     cursor.execute("SELECT * FROM Budget WHERE Expense = 1")
@@ -121,6 +125,14 @@ def view_income():
             print(f"Item {item[0]}: {item[1]} Amount: £{item[3]}")
     else:
         print("No income found")
+
+# def view_income_by_cat
+def view_income_by_cat():
+    cursor.execute("SELECT * FROM Budget WHERE Expense = 0 ORDER BY Category")
+    incomes = cursor.fetchall()
+    if incomes:
+        for item in incomes:
+            print(f"Category: {item[4].title()} - {item[1]} Cost: £{item[3]}")
 
 # Connect / create the SQLite database
 try:
@@ -171,16 +183,22 @@ try:
         # def view_expenses
             elif user_choice == 2:
                 view_expenses()
+                current_balance()
         # def view_expense_by_cat
             elif user_choice == 3:
                 view_expense_by_cat()
+                current_balance()
         # def add_income
             elif user_choice == 4:
                 add_income()
         # def view_income
             elif user_choice == 5:
                 view_income()
+                current_balance()
         # def view_income_by_cat
+            elif user_choice == 6:
+                view_income_by_cat()
+                current_balance()
         # def cat_budget
         # def view_cat_budget
         # def set_goals
