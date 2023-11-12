@@ -144,6 +144,31 @@ def cat_budget():
     print(f"Budget for {budget_category} set to £{budget_amount}")
     db_budget.commit()
 
+# def view_cat_budget
+def view_cat_budget():
+    cursor_budget.execute("SELECT * FROM Set_budget")
+    budgets = cursor_budget.fetchall()
+    print("Please choose from the below budgets: ")
+    budget_list = []
+    for budget in budgets:
+        budget_name = budget[1]
+        if budget_name not in budget_list:
+            budget_list.append(budget_name)
+        else:
+            continue
+    budget_list = sorted(budget_list)
+    for i in budget_list:
+        print(i)
+
+    budget_choice = input(": ").strip().title()
+    cursor_budget.execute("SELECT * FROM Set_budget WHERE Category = ?", (budget_choice,))
+    budget_category = cursor_budget.fetchone()
+    if budget_category:
+        print(f"Category: {budget_choice}. Budget: {budget_category[2]}")
+    else:
+        print(f"No budget set for {budget_choice}")
+
+
 # Connect / create the SQLite database
 try:
     # db_tracker is used for income / expense table
@@ -230,8 +255,11 @@ try:
             elif user_choice == 7:
                 cat_budget()
         # def view_cat_budget
+            elif user_choice == 8:
+                view_cat_budget()
         # def set_goals
         # def view_goals
+        # Exit
             elif user_choice == 11:
                 db_tracker.close()
                 sys.exit("Exiting program")
