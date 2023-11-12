@@ -18,6 +18,26 @@ def add_expense():
     print(f"{item} has been added to budget planner")
     print()
 
+    # Take expense from budget if category has a budget
+    cursor_budget.execute('''SELECT * FROM Set_budget WHERE Category = ? ORDER BY id DESC LIMIT 1 ''', (category,))
+    old_budget = cursor_budget.fetchone()
+    if old_budget:
+        old_budget = float(old_budget[2])
+        new_budget = old_budget - cost
+
+        cursor_budget.execute("SELECT MAX(id) FROM Set_budget")
+        latest_id = cursor_budget.fetchone()
+        if latest_id[0] is not None:
+            latest_id = latest_id[0] + 1
+        else:
+            latest_id = 1
+        
+        cursor_budget.execute('''INSERT INTO Set_Budget(id, Category, Amount) VALUES(?, ?, ?)''', (latest_id, category, new_budget))
+        db_budget.commit()
+        print(f"Current budget for this category: £{new_budget}")
+    else:
+        pass
+
 # Going to be amending the total a lot, so creating a function to pull it
 def check_total():
     cursor_tracker.execute("SELECT Total FROM Budget ORDER BY id DESC LIMIT 1")
@@ -109,16 +129,25 @@ def cat_budget():
     print(category_list)
     for i in category_list:
         print(i)
-    budget_category = input(": ")
+    budget_category = input(": ").title().strip()
     budget_amount = input("How much is the budget?: £")
+
     cursor_tracker.execute("SELECT MAX(id) FROM Set_budget")
     latest_id = cursor_tracker.fetchone()
+    if latest_id[0] is not None:
+        latest_id = latest_id[0] + 1
+    else:
+        latest_id = 1
 
     cursor_budget.execute('''INSERT INTO Set_budget(id, Category, Amount) 
-                          VALUES (?, ?, ?)''', (latest_id, budget_category, budget_amount))
+                          VALUES (?, ?, ?)''', (latest_id, budget_category, budget_amount,))
+    print(f"Budget for {budget_category} set to £{budget_amount}")
+    db_budget.commit()
 
 # Connect / create the SQLite database
 try:
+    # db_tracker is used for income / expense table
+    # db_budget is used for tracking budgets
     db_tracker = sqlite3.connect("tracker.db")
     cursor_tracker = db_tracker.cursor()
 
@@ -152,7 +181,7 @@ try:
         print("Opening Budgets")
     else:
         cursor_budget.execute('''CREATE TABLE Set_budget
-                              (id INTEGET PRIMARY KEY,
+                              (id INTEGER PRIMARY KEY,
                               Category TEXT,
                               Amount INTEGER)''')
         db_budget.commit()
