@@ -62,7 +62,7 @@ def next_id():
 def current_balance():
     print(f"Current balance: £{check_total()}")
 
-# def view_expenses
+# Function to view the expenses in the income / expense table
 def view_expenses():
     cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 1")
     expenses = cursor_tracker.fetchall()
@@ -72,7 +72,7 @@ def view_expenses():
     else:
         print("No expenses found")
     
-# def view_expense_by_cat
+# Function to view the expenses in the income / expense table by category
 def view_expense_by_cat():
     cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 1 ORDER BY Category")
     expenses = cursor_tracker.fetchall()
@@ -80,7 +80,7 @@ def view_expense_by_cat():
         for item in expenses:
             print(f"Category: {item[4].title()} - {item[1]} Cost: £{item[3]}")
 
-# def add_income
+# Function to add income into the income / expense table
 def add_income():
     item = input("Please input income source: ")
     cost = float(input("How much is this income?: £"))
@@ -95,7 +95,7 @@ def add_income():
     print(f"{item} has been added to budget planner")
     print()
 
-# def view_income
+# Function to view the income in the income / expense table
 def view_income():
     cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 0")
     income = cursor_tracker.fetchall()
@@ -105,7 +105,7 @@ def view_income():
     else:
         print("No income found")
 
-# def view_income_by_cat
+# Function to view the income in the income / expense table by category
 def view_income_by_cat():
     cursor_tracker.execute("SELECT * FROM Budget WHERE Expense = 0 ORDER BY Category")
     incomes = cursor_tracker.fetchall()
@@ -113,7 +113,7 @@ def view_income_by_cat():
         for item in incomes:
             print(f"Category: {item[4].title()} - {item[1]} Cost: £{item[3]}")
 
-# def cat_budget
+# Function to add a budget to categories in the set_budget table
 def cat_budget():
     cursor_tracker.execute("SELECT * FROM Budget")
     categories = cursor_tracker.fetchall()
@@ -144,7 +144,7 @@ def cat_budget():
     print(f"Budget for {budget_category} set to £{budget_amount}")
     db_budget.commit()
 
-# def view_cat_budget
+# Function to view the budgets in the set_budget table
 def view_cat_budget():
     cursor_budget.execute("SELECT * FROM Set_budget")
     budgets = cursor_budget.fetchall()
