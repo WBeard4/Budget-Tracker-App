@@ -5,19 +5,12 @@ from goal import *
 import sqlite3
 import sys
 
-"""
-Sphinx Docstring test
-"""
 # Initialize instances of required classes
-def initialize():   
-    """
-    test
-    """
-    income = Income()
-    expense = Expense()
-    budget = Budget()
-    goal = Goal()
-initialize()
+income = Income()
+expense = Expense()
+budget = Budget()
+goal = Goal()
+
 
 # Main loop for user interaction
 while True:
